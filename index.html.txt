@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Static Site</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f3f4f6;
+      }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <main class="w-full max-w-2xl bg-white shadow-xl rounded-lg p-8 md:p-12 text-center">
+        <!-- Main content card -->
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight mb-4">
+            Get in Touch!
+        </h1>
+        <p class="text-lg text-gray-600 mb-8">
+            This is a more complex version of the site, featuring a form.
+        </p>
+
+        <!-- The Contact Form -->
+        <form id="contact-form" class="space-y-6">
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 text-left">Your Name</label>
+                <input type="text" id="name" name="name" required
+                       class="mt-1 block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+            </div>
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 text-left">Your Email</label>
+                <input type="email" id="email" name="email" required
+                       class="mt-1 block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+            </div>
+            <div>
+                <label for="message" class="block text-sm font-medium text-gray-700 text-left">Message</label>
+                <textarea id="message" name="message" rows="4" required
+                          class="mt-1 block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"></textarea>
+            </div>
+            <button type="submit"
+                    class="w-full inline-flex justify-center py-3 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                Send Message
+            </button>
+        </form>
+        <!-- Container for a success or error message -->
+        <div id="status-message" class="mt-4 text-center text-sm font-medium"></div>
+    </main>
+
+    <script>
+        // Get the form and the status message div
+        const form = document.getElementById('contact-form');
+        const statusMessage = document.getElementById('status-message');
+
+        form.addEventListener('submit', async (event) => {
+            // Prevent the default form submission that would reload the page
+            event.preventDefault();
+
+            // Display a loading message
+            statusMessage.textContent = 'Sending message...';
+            statusMessage.className = 'mt-4 text-center text-sm font-medium text-gray-500';
+
+            // Get the form data
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                // The URL below is a placeholder. After you deploy your backend,
+                // you will replace this with the real URL of your serverless function.
+                // NOTE: The Firebase URL for your function ends in '/api'.
+                // You must add '/submitForm' to the end of that URL to route the request correctly.
+                const response = await fetch('https://us-central1-my-first-backend-997f6.cloudfunctions.net/api/submitForm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // Show a success message if the submission was successful
+                    statusMessage.textContent = 'Thank you! Your message has been sent.';
+                    statusMessage.className = 'mt-4 text-center text-sm font-medium text-green-600';
+                    form.reset(); // Clear the form fields
+                } else {
+                    // Show an error message if something went wrong
+                    statusMessage.textContent = 'Oops! Something went wrong. Please try again.';
+                    statusMessage.className = 'mt-4 text-center text-sm font-medium text-red-600';
+                }
+            } catch (error) {
+                // Show a network error message
+                console.error('Network error:', error);
+                statusMessage.textContent = 'Could not connect to the server. Please check your network and try again.';
+                statusMessage.className = 'mt-4 text-center text-sm font-medium text-red-600';
+            }
+        });
+    </script>
+</body>
+</html>
+
